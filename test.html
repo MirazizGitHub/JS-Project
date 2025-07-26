@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Default holat: Gray border */
+        input {
+            border: none;
+            border-bottom: 2px solid gray;
+            outline: none;
+        }
+
+        /* Yuborishdan so'ng invalid inputlar uchun qizil border */
+        form.submitted input:invalid {
+            border-bottom: 2px solid red;
+        }
+
+        /* Yuborishdan oldin valid bo'lgan inputlar uchun green border */
+        form.submitted input:valid {
+            border-bottom: 2px solid green;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="myForm" novalidate>
+        <input type="text" placeholder="Ismingiz" required>
+        <input type="email" placeholder="Email" required>
+        <button type="submit">Yuborish</button>
+    </form>
+
+
+    <script>
+        const form = document.getElementById('myForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();  // Formani yuborilishini bloklaymiz
+            form.classList.add('submitted'); // Formani yuborishga harakat qilinganda 'submitted' klassini qo'shamiz
+
+            // Agar forma to'ldirilgan bo'lsa, uni yuborish mumkin, aks holda qizil border bo'ladi.
+            if (form.checkValidity()) {
+                form.submit();
+            }
+        });
+    </script>
+
+
+
+</body>
+
+</html>
