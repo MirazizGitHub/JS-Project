@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="uz">
+
+<head>
+    <meta charset="utf-8">
+    <title>Realistik Stickman Run</title>
+    <style>
+        body {
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .stickman {
+            position: relative;
+            width: 100px;
+            height: 180px;
+        }
+
+        .joint {
+            background: #000;
+            position: absolute;
+            transform-origin: top center;
+        }
+
+        .head {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #000;
+            position: absolute;
+            top: 0;
+            left: 30px;
+        }
+
+        .torso {
+            width: 8px;
+            height: 80px;
+            background: #000;
+            position: absolute;
+            top: 40px;
+            left: 46px;
+        }
+
+        .upper-arm,
+        .forearm,
+        .thigh,
+        .calf {
+            width: 8px;
+            background: #000;
+        }
+
+        .upper-arm {
+            height: 40px;
+        }
+
+        .forearm {
+            height: 35px;
+            top: 40px;
+        }
+
+        .thigh {
+            height: 50px;
+        }
+
+        .calf {
+            height: 45px;
+            top: 50px;
+        }
+
+        /* Placement */
+        .arm.left {
+            top: 50px;
+            left: 42px;
+        }
+
+        .arm.right {
+            top: 50px;
+            right: 42px;
+        }
+
+        .leg.left {
+            top: 120px;
+            left: 42px;
+        }
+
+        .leg.right {
+            top: 120px;
+            right: 42px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stickman">
+        <div class="head"></div>
+        <div class="torso"></div>
+
+        <div class="arm left joint upper-arm">
+            <div class="joint forearm"></div>
+        </div>
+        <div class="arm right joint upper-arm">
+            <div class="joint forearm"></div>
+        </div>
+
+        <div class="leg left joint thigh">
+            <div class="joint calf"></div>
+        </div>
+        <div class="leg right joint thigh">
+            <div class="joint calf"></div>
+        </div>
+    </div>
+
+    <script>
+        const speed = 0.006;
+
+        function animate() {
+            const t = Date.now() * speed;
+
+            // --- Tanani sakratish (yugurish tebranishi) ---
+            const stickman = document.querySelector(".stickman");
+            stickman.style.transform = `translateY(${Math.abs(Math.sin(t)) * 10}px)`;
+
+            // --- Qo'llar ---
+            const arms = document.querySelectorAll(".arm");
+            arms[0].style.transform = `rotate(${Math.sin(t) * 50}deg)`;             // chap
+            arms[1].style.transform = `rotate(${Math.sin(t + Math.PI) * 50}deg)`;   // o‘ng
+
+            const forearms = document.querySelectorAll(".forearm");
+            forearms[0].style.transform = `rotate(-${Math.max(20, (20 + Math.cos(t) * 40))}deg)`;
+            forearms[1].style.transform = `rotate(-${Math.max(20, (20 + Math.cos(t + Math.PI) * 40))}deg)`;
+
+            // --- Oyoqlar ---
+            const legs = document.querySelectorAll(".leg");
+            legs[0].style.transform = `rotate(${Math.sin(t + Math.PI) * 50}deg)`;   // chap
+            legs[1].style.transform = `rotate(${Math.sin(t) * 50}deg)`;             // o‘ng
+
+            const calves = document.querySelectorAll(".calf");
+            calves[0].style.transform = `rotate(${Math.max(0, Math.cos(t) * 100)}deg)`;
+            calves[1].style.transform = `rotate(${Math.max(0, Math.cos(t + Math.PI) * 100)}deg)`;
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
