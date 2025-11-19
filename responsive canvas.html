@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, maximum-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #wrapper {
+            /* padding: 20px; */
+            /* shu bo‘sh joyni sen xohlagancha oshir/ kamaytir */
+            background: #8d1212;
+        }
+
+        canvas {
+            background: #222;
+            display: block;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <h2>Hello world</h2> -->
+
+    <body>
+        <div id="wrapper">
+            <canvas id="game"></canvas>
+        </div>
+    </body>
+
+
+    <script>
+
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d");
+
+        let baseWidth = 800;
+        let baseHeight = 500;
+
+        let box = { x: 100, y: 100, w: 50, h: 50, vx: 4, vy: 4 };
+
+        canvas.width = baseWidth;
+        canvas.height = baseHeight;
+
+        let customPadding = {
+            x: 40,
+            y: 40,
+        }
+
+        function resize() {
+            const scale = Math.min(
+                (window.innerWidth - customPadding.x) / baseWidth,
+                (window.innerHeight - customPadding.y) / baseHeight,
+            );
+            canvas.style.width = baseWidth * scale + "px";
+            canvas.style.height = baseHeight * scale + "px";
+        }
+
+        window.addEventListener("resize", resize);
+        resize();
+
+        function update() {
+            box.x += box.vx;
+            box.y += box.vy;
+            if (box.x <= 0 || box.x + box.w >= baseWidth) box.vx *= -1;
+            if (box.y <= 0 || box.y + box.h >= baseHeight) box.vy *= -1;
+        }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "red";
+            ctx.fillRect(box.x, box.y, box.w, box.h);
+        }
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        document.addEventListener('gesturestart', e => e.preventDefault());
+        document.addEventListener('gesturechange', e => e.preventDefault());
+        document.addEventListener('gestureend', e => e.preventDefault());
+
+        document.addEventListener('touchmove', e => {
+            if (e.scale !== 1) e.preventDefault();
+        }, { passive: false });
+
+    </script>
+</body>
+
+</html>
