@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            background: #1a2a3a;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+    <script>
+        const canvas = document.getElementById('c');
+        const ctx = canvas.getContext('2d');
+
+        // --- RESIZE ---
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+
+        // --- CONFIG ---
+        const TRAIL_COLOR = 'gold';
+        const TRAIL_THICKNESS = 5;   // max chiziq qalinligi
+        const POINT_LIFE = 150;  // ms, har bir nuqta qancha yashaydi
+
+        // --- STATE ---
+        let isDown = false;
+        const points = [];  // { x, y, life, maxLife, touchBreak? }
+
+        // --- POINTER EVENTS ---
+        canvas.addEventListener('pointerdown', e => {
+            if (!e.isPrimary) return;
+            isDown = true;
+            points.push({ x: e.clientX, y: e.clientY, life: POINT_LIFE, maxLife: POINT_LIFE });
+        });
+
+        canvas.addEventListener('pointermove', e => {
+            if (!e.isPrimary || !isDown) return;
+            points.push({ x: e.clientX, y: e.clientY, life: POINT_LIFE, maxLife: POINT_LIFE });
+        });
+
+        canvas.addEventListener('pointerup', e => {
+            if (!e.isPrimary) return;
+            isDown = false;
+            points.push({ touchBreak: true, life: POINT_LIFE, maxLife: POINT_LIFE });
+        });
+
+        document.body.addEventListener('mouseleave', () => {
+            if (isDown) {
+                isDown = false;
+                points.push({ touchBreak: true, life: POINT_LIFE, maxLife: POINT_LIFE });
+            }
+        });
+
+        function shadow(dt) {
+
+            // age points
+            for (const p of points) p.life -= dt;
+            while (points.length && points[0].life <= 0) points.shift();
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // draw trail
+            ctx.lineJoin = 'bevel';
+            ctx.lineCap = 'butt';
+            ctx.strokeStyle = TRAIL_COLOR;
+
+            for (let i = 1; i < points.length; i++) {
+                const cur = points[i];
+                const prev = points[i - 1];
+                if (cur.touchBreak || prev.touchBreak) continue;
+                ctx.lineWidth = (cur.life / cur.maxLife) * TRAIL_THICKNESS;
+                ctx.beginPath();
+                ctx.moveTo(prev.x, prev.y);
+                ctx.lineTo(cur.x, cur.y);
+                ctx.stroke();
+            }
+        }
+
+
+
+        // --- LOOP ---
+        let last = 0;
+        function frame(ts) {
+            requestAnimationFrame(frame);
+            const dt = ts - last;
+            last = ts;
+
+            shadow(dt);
+        }
+        requestAnimationFrame(frame);
+    </script>
+</body>
+
+</html>
